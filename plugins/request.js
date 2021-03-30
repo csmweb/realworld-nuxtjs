@@ -11,7 +11,7 @@ export const request = axios.create({
 // 通过插件机制获取到上下文对象（query，params，req，$store)
 export default (context) => {
 
-  const { store } = context
+  const { store, redirect } = context
   // 请求拦截器
   request.interceptors.request.use(function (config) {
     const { user } = store.state
@@ -27,6 +27,10 @@ export default (context) => {
   request.interceptors.response.use(function (data) {
     return data
   }, function(error) {
-    throw error
+    if(error.response && error.response.status === 401) {
+      redirect('/login')
+    } else {
+      throw error
+    }
   })
 }
